@@ -1,0 +1,12 @@
+features/
+tests/
+.gitignore
+.gitattribute
+.php_cs.dist
+behat.yml
+Dockerfile
+LICENSE
+phpstan.neon
+phpstan.neon
+README.md
+phpunit.xml.dist
