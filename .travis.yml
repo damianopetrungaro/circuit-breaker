@@ -1,0 +1,18 @@
+sudo: required
+
+language: PHP
+
+services:
+  - docker-compose
+
+addons:
+  apt:
+    packages:
+      - docker-ce
+
+before_install:
+  - docker-compose up --build
+
+script:
+  - docker-compose exec php composer unit-tests
+  - docker-compose exec php composer integration-tests
