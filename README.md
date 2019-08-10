@@ -8,7 +8,7 @@ Later unit tests will be added too.
 
 # Installation
 
-*Coming soon*
+`php composer.phar require damianopetrungaro/circuit-breaker`
 
 ## How does it work?
 
