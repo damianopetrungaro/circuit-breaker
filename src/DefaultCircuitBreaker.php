@@ -49,9 +49,7 @@ final class DefaultCircuitBreaker implements CircuitBreaker
 
     public function execute(callable $function)
     {
-        $state = $this->persistence->state();
-
-        if ($state->equals(State::OPEN())) {
+        if ($this->persistence->isOpen()) {
             throw new CircuitBreakerIsOpen();
         }
 

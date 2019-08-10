@@ -6,7 +6,6 @@ namespace DamianoPetrungaro\CircuitBreaker\Middleware;
 
 use DamianoPetrungaro\CircuitBreaker\Middleware\Exception\TooManyRetries;
 use DamianoPetrungaro\CircuitBreaker\State\Persistence\Persistence;
-use DamianoPetrungaro\CircuitBreaker\State\State;
 use Throwable;
 
 final class Retries implements Middleware
@@ -29,7 +28,7 @@ final class Retries implements Middleware
 
     public function __invoke(callable $callback)
     {
-        if (!$this->persistence->state()->equals(State::HALF_OPEN()) &&
+        if (!$this->persistence->isHalfOpen() &&
             $this->persistence->failures() >= $this->persistence->maxFailures()
         ) {
             throw new TooManyRetries();

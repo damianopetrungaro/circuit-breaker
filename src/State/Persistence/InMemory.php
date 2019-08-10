@@ -78,6 +78,7 @@ final class InMemory implements Persistence
     public function reset(): void
     {
         $this->failures = 0;
+        $this->lastFailure = null;
     }
 
     public function failures(): int
