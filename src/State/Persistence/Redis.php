@@ -133,7 +133,8 @@ final class Redis implements Persistence
 
     public function failures(): int
     {
-        if (($failures = $this->client->get($this->failuresKey)) && false === $failures) {
+        $failures = $this->client->get($this->failuresKey);
+        if (false === $failures) {
             throw new UnableToRetrieveFailuresCounter(new RuntimeException('key does not exists'));
         }
 

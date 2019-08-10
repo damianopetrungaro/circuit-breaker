@@ -1,0 +1,25 @@
+sudo: required
+
+language: generic
+
+addons:
+  apt:
+    packages:
+      - docker-ce
+
+script:
+  - echo "using PHP 7.2"
+  - docker-compose build --build-arg PHP_VERSION=7.2
+  - docker-compose up -d
+  - docker-compose exec php composer fix
+  - docker-compose exec php composer analyse
+  - docker-compose exec php composer unit-tests
+  - docker-compose exec php composer integration-tests
+  - echo "using PHP 7.3"
+  - docker-compose build --build-arg PHP_VERSION=7.3
+  - docker-compose up -d
+  - docker-compose exec php composer unit-tests
+  - docker-compose exec php composer fix
+  - docker-compose exec php composer analyse
+  - docker-compose exec php composer unit-tests
+  - docker-compose exec php composer integration-tests

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use DamianoPetrungaro\CircuitBreaker\DefaultCircuitBreaker;
 use DamianoPetrungaro\CircuitBreaker\Middleware\Base;
 use DamianoPetrungaro\CircuitBreaker\Middleware\Retries;
