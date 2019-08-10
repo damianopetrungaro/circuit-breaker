@@ -51,7 +51,7 @@ final class Redis implements Persistence
     /**
      * @var string
      */
-    private $lastFailuresKey;
+    private $lastFailureKey;
 
     /**
      * @var string
@@ -76,11 +76,12 @@ final class Redis implements Persistence
         $this->client = $client;
         $this->determineState = $determineState;
         $this->failuresKey = $failuresKey;
-        $this->lastFailuresKey = $lastFailuresKey;
+        $this->lastFailureKey = $lastFailuresKey;
         $this->resetTimeoutKey = $resetTimeoutKey;
         $this->maxFailuresKey = $maxFailuresKey;
         $this->setResetTimeout($resetTimeout);
         $this->setMaxFailures($maxFailures);
+        $this->setFailures();
     }
 
     public function state(): State
@@ -115,7 +116,7 @@ final class Redis implements Persistence
             throw new UnableToIncreaseFailuresCounter();
         }
 
-        if (!$this->client->set($this->lastFailuresKey, $lastFailure)) {
+        if (!$this->client->set($this->lastFailureKey, $lastFailure)) {
             throw new UnableToStoreLastFailure();
         }
     }
@@ -125,14 +126,14 @@ final class Redis implements Persistence
         if (!$this->client->set($this->failuresKey, 0)) {
             throw new UnableToResetFailuresCounter();
         }
-        if (0 === $this->client->delete($this->lastFailuresKey)) {
+        if (0 === $this->client->delete($this->lastFailureKey)) {
             throw new UnableToStoreLastFailure();
         }
     }
 
     public function failures(): int
     {
-        if (!$failures = $this->client->get($this->failuresKey)) {
+        if (($failures = $this->client->get($this->failuresKey)) && false === $failures) {
             throw new UnableToRetrieveFailuresCounter(new RuntimeException('key does not exists'));
         }
 
@@ -145,12 +146,18 @@ final class Redis implements Persistence
 
     public function lastFailure(): ?DateTimeImmutable
     {
-        if (!$lastFailure = $this->client->get($this->lastFailuresKey)) {
+        $lastFailure = $this->client->get($this->lastFailureKey);
+        if (false === $lastFailure) {
             return null;
         }
 
         try {
-            return DateTimeImmutable::createFromFormat(self::DATE_TIME_FORMAT, $lastFailure);
+            $date = DateTimeImmutable::createFromFormat(self::DATE_TIME_FORMAT, $lastFailure);
+            if (false === $date) {
+                throw new RuntimeException("last failure is not a valid date format: $lastFailure.");
+            }
+
+            return $date;
         } catch (Throwable $e) {
             throw new UnableToRetrieveLastFailure($e);
         }
@@ -158,7 +165,8 @@ final class Redis implements Persistence
 
     public function maxFailures(): int
     {
-        if (!$failures = $this->client->get($this->maxFailuresKey)) {
+        $failures = $this->client->get($this->maxFailuresKey);
+        if (false === $failures) {
             throw new UnableToRetrieveMaxFailures(new RuntimeException('key does not exists'));
         }
 
@@ -171,7 +179,8 @@ final class Redis implements Persistence
 
     public function resetTimeout(): DateInterval
     {
-        if (!$resetTimeout = $this->client->get($this->resetTimeoutKey)) {
+        $resetTimeout = $this->client->get($this->resetTimeoutKey);
+        if (false === $resetTimeout) {
             throw new UnableToRetrieveResetTimeout(new RuntimeException('key does not exists'));
         }
 
@@ -189,12 +198,20 @@ final class Redis implements Persistence
         }
     }
 
-    /**
-     * @param int $maxFailures
-     */
     private function setMaxFailures(int $maxFailures): void
     {
         if (!$this->client->set($this->maxFailuresKey, $maxFailures)) {
+            throw new UnableToStoreMaxFailures();
+        }
+    }
+
+    private function setFailures(): void
+    {
+        if (false !== $this->client->get($this->failuresKey)) {
+            return;
+        }
+
+        if (!$this->client->set($this->failuresKey, 0)) {
             throw new UnableToStoreMaxFailures();
         }
     }

@@ -1,5 +1,6 @@
-Feature: Circuit breaker can interact with a Redis server
-  In order to use the circuit breaker shared across different PHP application
+@inmemory
+Feature: Circuit breaker can interact within the PHP application
+  In order to use the circuit breaker on a single PHP application
   As an engineer
   I need to verify that the library behave as expected
 

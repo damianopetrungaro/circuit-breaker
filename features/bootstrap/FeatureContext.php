@@ -42,6 +42,16 @@ class FeatureContext implements Context
     private $circuitBreakerException;
 
     /**
+     * @BeforeScenario @redis
+     */
+    public static function prepare()
+    {
+        $redisClient = new Redis();
+        $redisClient->connect('redis');
+        $redisClient->flushAll();
+    }
+
+    /**
      * @Given A circuit breaker instance using Redis persistence adapter with :arg1 retries and a reset timeout of :arg2 seconds
      */
     public function aCircuitBreakerInstanceUsingRedisPersistenceAdapterWithRetries(int $maxFailure, int $resetTimeout): void
