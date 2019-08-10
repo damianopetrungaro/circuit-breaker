@@ -3,11 +3,10 @@
   "description": "A Circuit breaker written in PHP",
   "type": "library",
   "require-dev": {
-    "roave/security-advisories": "dev-master",
-    "friendsofphp/php-cs-fixer": "^2.12",
+    "friendsofphp/php-cs-fixer": "^2.15",
     "damianopetrungaro/php-commitizen": "^0.1.2",
-    "phpstan/phpstan": "^0.11.1",
-    "jangregor/phpstan-prophecy": "^0.3.0",
+    "phpstan/phpstan": "^0.11.12",
+    "jangregor/phpstan-prophecy": "^0.4.2",
     "phpunit/phpunit": "^8.3",
     "behat/behat": "^3.5"
   },

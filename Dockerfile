@@ -1,5 +1,6 @@
+ARG PHP_VERSION=7.3.5
 FROM composer:latest as composer
-FROM php:7.3.5-stretch as php
+FROM php:${PHP_VERSION}-stretch as php
 WORKDIR /app
 RUN mkdir -p /usr/src/php/ext/redis \
     && curl -L https://github.com/phpredis/phpredis/archive/5.0.2.tar.gz | tar xvz -C /usr/src/php/ext/redis --strip 1 \
